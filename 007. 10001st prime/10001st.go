@@ -14,7 +14,6 @@ func main() {
 		for j := i - 1; j > 1; j-- {
 			if (i % j) == 0 {
 				primeness = false
-				break
 			}
 		}
 		if primeness {
@@ -27,3 +26,5 @@ func main() {
 		i++
 	}
 }
+
+//too slow, needs redesing
