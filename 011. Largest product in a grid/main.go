@@ -18,18 +18,16 @@ func check(e error) {
 //Reads the grid of numbers from file f and converts them into a slice [x][y]
 func getnumslice(f string, x int, y int) [][]int {
 	var nums = make([][]int, x)
-	var num = make([]int, y)
 	var column []string
 	dat, err := ioutil.ReadFile(f)
 	check(err)
 	row := strings.Split(string(dat), "\n")
-
 	for i := 0; i < x; i++ {
 		column = strings.Split(row[i], " ")
+		nums[i] = make([]int, y)
 		for j := 0; j < y; j++ {
-			num[j], _ = strconv.Atoi(column[j])
+			nums[i][j], _ = strconv.Atoi(column[j])
 		}
-		nums[i] = num
 	}
 	return nums
 }
@@ -88,7 +86,7 @@ func main() {
 		wg.Done()
 	}()
 
-	//search diagonally down-right and up-right
+	//search diagonally up-right
 	go func() {
 		for i := 19; i >= 3; i-- {
 			for j := 0; j <= 16; j++ {
