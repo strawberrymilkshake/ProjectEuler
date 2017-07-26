@@ -1,9 +1,9 @@
 /*
+The number, 197, is called a circular prime because all rotations of the digits: 1
+97, 971, and 719, are themselves prime.
 
-
-The number, 197, is called a circular prime because all rotations of the digits: 197, 971, and 719, are themselves prime.
-
-There are thirteen such primes below 100: 2, 3, 5, 7, 11, 13, 17, 31, 37, 71, 73, 79, and 97.
+There are thirteen such primes below 100: 2, 3, 5, 7, 11, 13, 17, 31, 37, 71,
+73, 79, and 97.
 
 How many circular primes are there below one million?
 */
@@ -12,17 +12,20 @@ package main
 import (
 	"fmt"
 	"math"
+	"strconv"
 )
 
 func iscircular(n int) (result bool) {
 	var a, b int
 	a = n
+	l := len(strconv.Itoa(a))
 	result = true
 	if n < 10 {
 		return
 	}
 	for b != n {
-		b = rotate(a)
+
+		b = rotate(a, l)
 		a = b
 		if !primeness[b] {
 			result = false
@@ -31,14 +34,21 @@ func iscircular(n int) (result bool) {
 	return
 }
 
-func rotate(n int) int {
+func rotate(n int, le int) int {
 	//not ready
-	l := len(string(n))
+	//try create slice dynamically, depending on amount of digits
+	//with a number in [0], and rotations in next cells
+	// make([]int, 1, len())
+	//or put a number in an array of digits and pull rotations out of it
+	l := len(strconv.Itoa(n))
 	rotation := n / 10
 	if rotation == 0 {
 		return n
 	}
-	rotation += (n%10)*10 ^ (l - 1)
+	rotation += (n % 10) * int(math.Exp(float64(le-1)*math.Log(10)))
+	if l < le {
+		rotation *= 10
+	}
 	return rotation
 }
 
@@ -91,9 +101,9 @@ func main() {
 	for primes[i] < limit {
 		if iscircular(primes[i]) {
 			counter++
-			fmt.Println(counter)
+			//fmt.Println(counter)
 		}
-		fmt.Println(i)
+		fmt.Println(i, primes[i])
 		i++
 	}
 }
