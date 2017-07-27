@@ -15,41 +15,44 @@ import (
 	"strconv"
 )
 
-func iscircular(n int) (result bool) {
-	var a, b int
-	a = n
-	l := len(strconv.Itoa(a))
-	result = true
-	if n < 10 {
-		return
+func decompose(n int) []int {
+	var s = []int{}
+	if n > 100000 {
+		fmt.Println("sic")
 	}
-	for b != n {
+	sl := len(strconv.Itoa(n))
+	for i := 0; i < sl; i++ {
+		s = append(s, n%10)
+		n /= 10
+	}
+	for j := 0; j <= sl/2; j++ {
+		s[j], s[sl-j-1] = s[sl-j-1], s[j]
+	}
+	return s
+}
 
-		b = rotate(a, l)
-		a = b
-		if !primeness[b] {
+func iscircular(n []int) (result bool) {
+	result = true
+	for i := 0; i < len(n); i++ {
+		n = rotate(n)
+		r := 0
+		for j := 0; j < len(n); j++ {
+			r = r*10 + n[j]
+		}
+		if !primeness[r] {
 			result = false
+			return
 		}
 	}
 	return
 }
 
-func rotate(n int, le int) int {
-	//not ready
-	//try create slice dynamically, depending on amount of digits
-	//with a number in [0], and rotations in next cells
-	// make([]int, 1, len())
-	//or put a number in an array of digits and pull rotations out of it
-	l := len(strconv.Itoa(n))
-	rotation := n / 10
-	if rotation == 0 {
-		return n
+func rotate(n []int) []int {
+	l := len(n)
+	for i := 0; i < l-1; i++ {
+		n[i], n[i+1] = n[i+1], n[i]
 	}
-	rotation += (n % 10) * int(math.Exp(float64(le-1)*math.Log(10)))
-	if l < le {
-		rotation *= 10
-	}
-	return rotation
+	return n
 }
 
 func generateprimes() []int {
@@ -61,10 +64,12 @@ func generateprimes() []int {
 			if n <= limit && (n%12 == 1 || n%12 == 5) {
 				primeness[n] = !primeness[n]
 			}
+
 			n = 3*(x*x) + y*y
 			if n <= limit && n%12 == 7 {
 				primeness[n] = !primeness[n]
 			}
+
 			n = 3*(x*x) - y*y
 			if x > y && n <= limit && n%12 == 11 {
 				primeness[n] = !primeness[n]
@@ -82,28 +87,29 @@ func generateprimes() []int {
 
 	primeness[2] = true
 	primeness[3] = true
-	primes := make([]int, 0, 1270606)
-	for x = 2; x < len(primeness)-1; x++ {
+	primes := make([]int, 0, limit)
+	for x = 2; x < limit; x++ {
 		if primeness[x] {
 			primes = append(primes, x)
 		}
 	}
+	fmt.Println("Primeness length is", len(primeness))
 	return primes
 }
 
-const limit = 1000000
+const limit = 10000000
 
 var primeness [limit]bool
 
 func main() {
 	var i, counter int
 	primes := generateprimes()
-	for primes[i] < limit {
-		if iscircular(primes[i]) {
+	for primes[i] < 1000000 {
+		if iscircular(decompose(primes[i])) {
 			counter++
-			//fmt.Println(counter)
+			fmt.Println(counter, "-", primes[i])
 		}
-		fmt.Println(i, primes[i])
 		i++
 	}
+	fmt.Println(counter)
 }
