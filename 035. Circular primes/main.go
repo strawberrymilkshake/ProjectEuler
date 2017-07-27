@@ -17,15 +17,13 @@ import (
 
 func decompose(n int) []int {
 	var s = []int{}
-	if n > 100000 {
-		fmt.Println("sic")
-	}
+
 	sl := len(strconv.Itoa(n))
 	for i := 0; i < sl; i++ {
 		s = append(s, n%10)
 		n /= 10
 	}
-	for j := 0; j <= sl/2; j++ {
+	for j := 0; j < sl/2; j++ {
 		s[j], s[sl-j-1] = s[sl-j-1], s[j]
 	}
 	return s
@@ -33,7 +31,7 @@ func decompose(n int) []int {
 
 func iscircular(n []int) (result bool) {
 	result = true
-	for i := 0; i < len(n); i++ {
+	for i := 0; i < len(n)-1; i++ {
 		n = rotate(n)
 		r := 0
 		for j := 0; j < len(n); j++ {
@@ -61,17 +59,17 @@ func generateprimes() []int {
 	for x = 1; float64(x) <= nsqrt; x++ {
 		for y = 1; float64(y) <= nsqrt; y++ {
 			n = 4*(x*x) + y*y
-			if n <= limit && (n%12 == 1 || n%12 == 5) {
+			if (n <= limit) && (n%12 == 1 || n%12 == 5) {
 				primeness[n] = !primeness[n]
 			}
 
 			n = 3*(x*x) + y*y
-			if n <= limit && n%12 == 7 {
+			if (n <= limit) && (n%12 == 7) {
 				primeness[n] = !primeness[n]
 			}
 
 			n = 3*(x*x) - y*y
-			if x > y && n <= limit && n%12 == 11 {
+			if (x > y) && (n <= limit) && (n%12 == 11) {
 				primeness[n] = !primeness[n]
 			}
 		}
