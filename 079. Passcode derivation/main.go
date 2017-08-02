@@ -11,13 +11,6 @@ so as to determine the shortest possible secret passcode of unknown length.
 
 package main
 
-import (
-	"fmt"
-	"io/ioutil"
-	"strconv"
-	"strings"
-)
-
 func check(e error) {
 	if e != nil {
 		panic(e)
@@ -26,7 +19,7 @@ func check(e error) {
 
 //dummy
 func main() {
-	dat, err := ioutil.ReadFile("p079_keylog.txt")
+	/*dat, err := ioutil.ReadFile("p079_keylog.txt")
 	check(err)
 	p := [10][10]int{}
 	nums := strings.Split(string(dat), "\n")
@@ -46,5 +39,5 @@ func main() {
 	for i := 0; i <= 9; i++ {
 		fmt.Println(p[i])
 	}
-
+	*/
 }
