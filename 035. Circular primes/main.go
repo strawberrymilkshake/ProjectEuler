@@ -91,7 +91,6 @@ func generateprimes() []int {
 			primes = append(primes, x)
 		}
 	}
-	fmt.Println("Primeness length is", len(primeness))
 	return primes
 }
 
