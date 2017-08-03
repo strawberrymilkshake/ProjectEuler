@@ -11,33 +11,99 @@ so as to determine the shortest possible secret passcode of unknown length.
 
 package main
 
+import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"strings"
+)
+
 func check(e error) {
 	if e != nil {
 		panic(e)
 	}
 }
 
-//dummy
-func main() {
-	/*dat, err := ioutil.ReadFile("p079_keylog.txt")
-	check(err)
-	p := [10][10]int{}
-	nums := strings.Split(string(dat), "\n")
-	for _, v := range nums {
-		num, _ := strconv.Atoi(v)
-		if num == 0 {
-			break
+func runetoint(r byte) int {
+	return int(r - '0')
+}
+
+func isin(list []string, element string) bool {
+	for _, v := range list {
+		if v == element {
+			return true
 		}
-		third := num % 10
-		num /= 10
-		second := num % 10
-		num /= 10
-		first := num
-		p[first][second] = 1
-		p[second][third] = 1
 	}
+	return false
+}
+
+type euler79 struct {
+	numlist  []string
+	verses   map[int][]string
+	passcode string
+}
+
+func (e *euler79) init() {
+	e.numlist = *new([]string)
+	e.verses = *new(map[int][]string)
+	e.passcode = ""
+}
+
+func (e *euler79) fill(f string) {
+	dat, err := ioutil.ReadFile(f)
+	check(err)
+	nums := strings.Split(string(dat), "\n")
+	e.numlist = nums[:len(nums)-1]
+	verses := make(map[int][]string)
+	for _, val := range e.numlist {
+		vers := val[:2]
+		pos := runetoint(vers[0])
+		if !isin(verses[pos], vers) {
+			verses[pos] = append(verses[pos], vers)
+		}
+		vers = val[1:]
+		pos = runetoint(vers[0])
+		if !isin(verses[pos], vers) {
+			verses[pos] = append(verses[pos], vers)
+		}
+	}
+	e.verses = verses
+}
+
+//recursive search for longest passcode
+func (e *euler79) buildup(str string) {
+	next := runetoint(str[len(str)-1])
+	if e.verses[next] != nil {
+		for _, j := range e.verses[next] {
+			if strings.Index(str, j[1:]) == -1 {
+				var buffer bytes.Buffer
+				buffer.WriteString(str)
+				buffer.WriteString(j[len(j)-1:])
+				e.buildup(buffer.String())
+			}
+		}
+	} else {
+		if len(str) > len(e.passcode) {
+			e.passcode = str
+		}
+	}
+}
+
+func (e *euler79) process() {
+	//parsing each possible first digit, constantly building up the key string
 	for i := 0; i <= 9; i++ {
-		fmt.Println(p[i])
+		if !(e.verses[i] == nil) {
+			for _, vers := range e.verses[i] {
+				e.buildup(vers)
+			}
+		}
 	}
-	*/
+}
+
+func main() {
+	var e = new(euler79)
+	e.init()
+	e.fill("p079_keylog.txt")
+	e.process()
+	fmt.Println("The passcode is", e.passcode)
 }
