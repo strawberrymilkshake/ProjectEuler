@@ -4,10 +4,12 @@ package main
 import (
 	"fmt"
 	"math"
+	"sync"
 )
 
-func generateprimes() {
+func generateprimes() []int {
 	var x, y, n int
+	var primeness [limit]bool
 	nsqrt := math.Sqrt(limit)
 	for x = 1; float64(x) <= nsqrt; x++ {
 		for y = 1; float64(y) <= nsqrt; y++ {
@@ -38,53 +40,58 @@ func generateprimes() {
 
 	primeness[2] = true
 	primeness[3] = true
-}
 
-const limit = 100000
-
-var primeness [limit]bool
-
-func isin(list []int, element int) bool {
-	for _, v := range list {
-		if v == element {
-			return true
+	primes := make([]int, 0, limit)
+	for x = 2; x < limit; x++ {
+		if primeness[x] {
+			primes = append(primes, x)
 		}
 	}
-	return false
+	return primes
 }
-func getdivscnt(n int) int {
-	var list []int
-	for i := 2; i <= n/2; i++ {
-		if primeness[i] {
-			if n%i == 0 {
-				for j := 1; j <= n/i-1; j++ {
-					el := j * i
-					if !isin(list, el) {
-						list = append(list, el)
-					}
-				}
-			}
+
+func getdivscnt(n int) float64 {
+	f := float64(n)
+	i := 0
+	for primes[i] <= n {
+		if n%primes[i] == 0 {
+			f *= float64(primes[i] - 1)
+			f /= float64(primes[i])
 		}
+		i++
 	}
-	return len(list) + 1
+	return f
 }
+
+const limit = 3000000
+
+var primes []int
+var wg sync.WaitGroup
+var mut sync.Mutex
+var lowest float64
 
 //bruteforce
 func main() {
-	generateprimes()
-	i := 3
-	for {
-		if !primeness[i] {
-			k := i - getdivscnt(i)
-			rate := float64(k) / float64(i-1)
-			if rate < 15499.0/94744.0 {
-				fmt.Println("num=", i-k, "/", i-1)
-				fmt.Println(i)
-				break
+	lowest = 1
+	primes = generateprimes()
+	fmt.Println(getdivscnt(94745))
+	for i := 1; i <= 100; i++ {
+		wg.Add(1)
+		go func(i int) {
+			for j := 30000*(i-1) + 1; j <= 30000*i; j++ {
+				rate := getdivscnt(j) / float64(j-1)
+				mut.Lock()
+				if rate < lowest {
+					//15499.0/94744.0 {
+					lowest = rate
+					fmt.Printf("New lowest rate - %f for n - %v\n", rate, j)
+				}
+				mut.Unlock()
 			}
-		}
-		fmt.Println(i)
-		i++
+			wg.Done()
+		}(i)
+
 	}
 	//15499/94744
+	wg.Wait()
 }
