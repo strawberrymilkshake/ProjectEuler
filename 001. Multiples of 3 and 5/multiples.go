@@ -3,14 +3,23 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
-	sum := 0
-	for i := 1; i < 1000; i++ {
-		if (i%3 == 0) || (i%5 == 0) {
-			sum = sum + i
+	t := time.Now()
+	func() {
+		sum := 0
+
+		for i := 1; i <= 333; i++ {
+			sum += i * 3
+			if i <= 199 && ((i*5)%3) != 0 {
+				sum += i * 5
+			}
 		}
-	}
-	fmt.Println("The sum of all the multiples of 3 or 5 below 1000 is", sum)
+		fmt.Println("The sum of all the multiples of 3 or 5 below 1000 is", sum)
+	}()
+	fmt.Println("Execution time was:", time.Since(t))
 }
