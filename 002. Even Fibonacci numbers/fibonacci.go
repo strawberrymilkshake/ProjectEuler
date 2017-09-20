@@ -4,34 +4,45 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
-func evenness(i int32) bool {
+func iseven(i int) bool {
 	if i%2 == 0 {
 		return true
 	}
 	return false
 }
 
-func fibonacci() (sum int32) {
-	numbers := [3]int32{1, 2, 0}
-	sum = 2
-	for {
-		numbers[2] = numbers[0] + numbers[1]
-		if numbers[2] > 4000000 {
-			break
-		}
-		if evenness(numbers[2]) {
-			fmt.Println(numbers[2])
-			sum = sum + numbers[2]
-		}
-		numbers[0] = numbers[1]
-		numbers[1] = numbers[2]
+type fibonacci struct {
+	numbers [3]int
+}
 
+func (f *fibonacci) GetNextNum() int {
+	if f.numbers[2] == 0 {
+		f.numbers = [3]int{1, 1, 1}
+	} else {
+		f.numbers[0], f.numbers[1] = f.numbers[1], f.numbers[2]
+		f.numbers[2] = f.numbers[0] + f.numbers[1]
 	}
-	return
+	return f.numbers[2]
 }
 
 func main() {
-	fmt.Printf("The sum is %v", fibonacci())
+	t := time.Now()
+	f := new(fibonacci)
+	sum := 0
+	for {
+		n := f.GetNextNum()
+		if n > 4000000 {
+			breaks
+		}
+		if iseven(n) {
+			sum += n
+		}
+	}
+	fmt.Printf("The sum is %v\n", sum)
+	fmt.Println("Execution time was:", time.Since(t))
 }
